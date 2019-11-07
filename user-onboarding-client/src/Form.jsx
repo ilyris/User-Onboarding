@@ -1,20 +1,23 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import S from 'styled-components';
 import { withFormik, Form, Field } from 'formik';
 import * as Yup from "yup";
 import axios from "axios";
 
-const FormikForm = ({ values, handleChange, errors, touched }) => {
+const FormikForm = ({ values, handleChange, errors, touched,status }) => {
+    const [users, setUsers] = useState([]);
 
-
+    useEffect( () => {
+        status && setUsers(users => [...users, status])
+    },[status]);
     return (
         <StyledFormContainer>
-        {/* {values.users && values.users.map( (user) => {
+        {users.map( (user) => {
             console.log(user)
             return(
                 <div>{user}</div>
             );
-        })} */}
+        })}
             <StyledFormikForm>
             <StyledLabel>Name
                 <FormikField
@@ -76,12 +79,12 @@ const UserForm = withFormik({
         password: Yup.string().required("Please enter a password")
       }),
 
-      handleSubmit(values) {
+      handleSubmit(values, {setStatus}) {
         axios
           .post("https://reqres.in/api/users/", values)
           .then(res => {
             console.log(res);
-            console.log(values);
+            setStatus(res.data.name)
           })
           .catch(err => {
             console.log(err);
